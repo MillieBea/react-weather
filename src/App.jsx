@@ -1,14 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { PuffLoader } from "react-spinners";
 import "./App.css";
 
 export default function App() {
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("London");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [iconCode, setIconCode] = useState("");
+
+  useEffect(() => {
+    const defaultCity = "London";
+
+    setLoading(true);
+
+    let url = `https://api.shecodes.io/weather/v1/current?query=${defaultCity}&key=oa123466c5f9312d2cba18f04t3ef25d`;
+
+    axios
+      .get(url)
+      .then((response) => {
+        setWeather(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(
+          "Weather API error:",
+          error.response?.data || error.message,
+        );
+        setLoading(false);
+      });
+  }, []);
 
   function showTemperature(response) {
     setWeather(response.data);
@@ -129,19 +151,36 @@ export default function App() {
   }
 
   return (
-    <div className="App">
-      <form onSubmit={handleSubmit} className="search-form">
-        <input
-          type="text"
-          placeholder="Enter a city..."
-          value={city}
-          onChange={(event) => setCity(event.target.value)}
-        />
+    <div className="app-wrapper">
+      <div className="App">
+        <form onSubmit={handleSubmit} className="search-form">
+          <input
+            type="text"
+            placeholder="Enter a city..."
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
+          />
 
-        <button type="submit">Search</button>
-      </form>
+          <button type="submit">Search</button>
+        </form>
 
-      {weatherDisplay}
+        {weatherDisplay}
+      </div>
+
+      <footer className="footer">
+        Coded by{" "}
+        <a href="https://github.com/repos" target="_blank" rel="noreferrer">
+          Milena
+        </a>{" "}
+        ·{" "}
+        <a
+          href="https://github.com/MillieBea/react-weather"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open-source code
+        </a>
+      </footer>
     </div>
   );
 }
